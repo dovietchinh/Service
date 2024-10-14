@@ -1,0 +1,20 @@
+# version: '3'
+
+services:
+  mongodb:
+    image: mongo:7.0.14
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      bindIp: 127.0.0.1
+    ports:
+      - "27017:27017"
+    volumes:
+      - ${PWD:-.}/data:/data/db
+      - ${PWD:-.}/mongo.config.yaml:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf
+    # networks:
+    #   - mongodb
+
+      

@@ -1,0 +1,135 @@
+systemLog:
+    verbosity: 0   # 0 to 5 (default 0) equal to logLevel
+    quiet: false   # default false
+    traceAllExceptions: false   # default false 
+    #  syslogFacility: user # default user  # using when destination is syslog
+    path: /var/log/mongodb/mongod.log # path to a file to write to  # using when destination is file
+    logAppend: true
+    logRotate: reopen
+    destination: file  # file or syslog
+    timeStampFormat: iso8601-local  # iso8601-utc or iso8601-local
+  #  component:
+  #     accessControl:
+  #        verbosity: <int>
+  #     command:
+  #        verbosity: <int>
+
+      # COMMENT additional component verbosity settings omitted for brevity
+
+net:
+  port: 27017
+  # bindIp: localhost
+  bindIpAll: true
+  # maxIncomingConnections: <int>
+  # wireObjectCheck: <boolean>
+  # ipv6: <boolean>
+  # unixDomainSocket:
+  #   enabled: <boolean>
+  #   pathPrefix: <string>
+  #   filePermissions: <int>
+  # tls:
+  #   certificateSelector: <string>
+  #   clusterCertificateSelector: <string>
+  #   mode: <string>
+  #   certificateKeyFile: <string>
+  #   certificateKeyFilePassword: <string>
+  #   clusterFile: <string>
+  #   clusterPassword: <string>
+  #   CAFile: <string>
+  #   clusterCAFile: <string>
+  #   clusterAuthX509:
+  #     attributes: <string>
+  #     extensionValue: <string>
+  #   CRLFile: <string>
+  #   allowConnectionsWithoutCertificates: <boolean>
+  #   allowInvalidCertificates: <boolean>
+  #   allowInvalidHostnames: <boolean>
+  #   disabledProtocols: <string>
+  #   FIPSMode: <boolean>
+  #   logVersions: <string>
+  # compression:
+  #     compressors: <string>
+
+#security options
+# security:
+#    keyFile: <string>
+#    clusterAuthMode: <string>
+#    authorization: <string>
+#    transitionToAuth: <boolean>
+#    javascriptEnabled:  <boolean>
+#    redactClientLogData: <boolean>
+#    clusterIpSourceAllowlist:
+#      - <string>
+#    sasl:
+#       hostName: <string>
+#       serviceName: <string>
+#       saslauthdSocketPath: <string>
+#    enableEncryption: <boolean>
+#    encryptionCipherMode: <string>
+#    encryptionKeyFile: <string>
+#    kmip:
+#       keyIdentifier: <string>
+#       rotateMasterKey: <boolean>
+#       serverName: <string>
+#       port: <string>
+#       clientCertificateFile: <string>
+#       clientCertificatePassword: <string>
+#       clientCertificateSelector: <string>
+#       serverCAFile: <string>
+#       connectRetries: <int>
+#       connectTimeoutMS: <int>
+#    ldap:
+#       servers: <string>
+#       bind:
+#          method: <string>
+#          saslMechanisms: <string>
+#          queryUser: <string>
+#          queryPassword: <string | array>
+#          useOSDefaults: <boolean>
+#       transportSecurity: <string>
+#       timeoutMS: <int>
+#       userToDNMapping: <string>
+#       authz:
+#          queryTemplate: <string>
+#       validateLDAPServerConfig: <boolean>
+
+setParameter:
+  enableLocalhostAuthBypass: true
+
+
+storage:
+  dbPath: /data/db
+  # journal:
+  #   commitIntervalMs: <num>
+  directoryPerDB: true #default false   
+  # syncPeriodSecs: <int>
+  engine: wiredTiger # wiredTiger or inMemory , inMemory is only available in MongoDB Enterprise
+  # wiredTiger:
+  #   engineConfig:
+  #       cacheSizeGB: <number>
+  #       journalCompressor: <string>
+  #       directoryForIndexes: <boolean>
+  #       maxCacheOverflowFileSizeGB: <number>
+  #   collectionConfig:
+  #       blockCompressor: <string>
+  #   indexConfig:
+  #       prefixCompression: <boolean>
+  # inMemory:
+  #   engineConfig:
+  #       inMemorySizeGB: <number>
+  # oplogMinRetentionHours: <double>
+
+
+operationProfiling:
+  mode: off # default to off # off, slowOp, all
+#    slowOpThresholdMs: <int>
+#    slowOpSampleRate: <double>
+#    filter: <string>
+
+# replication:
+#    oplogSizeMB: <int>
+#    replSetName: <string>
+#    enableMajorityReadConcern: <boolean>
+
+# sharding:
+#    clusterRole: <string>
