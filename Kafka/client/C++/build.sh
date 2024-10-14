@@ -1,0 +1,1 @@
+g++ main.cpp -L -lrdkafka++ -lz -lpthread -lrt -lssl -lcrypto -ldl -lzstd -I/usr/local/include -L/usr/local/lib
