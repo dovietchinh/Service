@@ -10,9 +10,11 @@ services:
       bindIp: 127.0.0.1
     ports:
       - "27017:27017"
+    restart: always
     volumes:
-      - ${PWD:-.}/data:/data/db
+      - ${PWD:-.}/volumes:/data/db
       - ${PWD:-.}/mongo.config.yaml:/etc/mongod.conf
+      - /etc/localtime:/etc/localtime:ro
     command: mongod --config /etc/mongod.conf
     # networks:
     #   - mongodb

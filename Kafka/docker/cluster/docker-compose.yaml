@@ -1,0 +1,112 @@
+# version: "3"
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.7.1
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
+    restart: always
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOO_SERVERS: server.1=zookeeper:2181:2888
+      DATA_DIR: /data
+      DATA_LOG_DIR: /datalog
+      # ZOOKEEPER_SECURE_CLIENT_PORT: 2281
+    volumes:
+      - ./volumes/zookeeper/data:/data
+      - ./volumes/zookeeper/datalog:/datalog
+    networks:
+      - kafka-cluster
+  kafka1:
+    image: confluentinc/cp-kafka:7.7.1
+    hostname: kafka1
+    container_name: kafka-broker-1
+    ports:
+      - "9091:9091"
+    restart: always
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:19091,LISTENER_DOCKER_EXTERNAL://0.0.0.0:9091
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:19091,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-my_kafka}:9091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      CONFLUENT_SUPPORT_METRICS_ENABLE: 0
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+    volumes:
+      - ${PWD}/volumes/kafka1/data:/var/lib/kafka/data
+    user: 0:0
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka-cluster
+  kafka2:
+    image: confluentinc/cp-kafka:7.7.1
+    hostname: kafka2
+    container_name: kafka-broker-2
+    ports:
+      - "9092:9092"
+    restart: always
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka2:29092,LISTENER_DOCKER_EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka2:29092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-my_kafka}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      CONFLUENT_SUPPORT_METRICS_ENABLE: 0
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+    volumes:
+      - ./volumes/kafka2/data:/var/lib/kafka/data:rw
+    user: 0:0
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka-cluster
+  kafka3:
+    image: confluentinc/cp-kafka:7.7.1
+    hostname: kafka3
+    container_name: kafka-broker-3
+    ports:
+      - "9093:9093"
+    restart: always
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka3:29093,LISTENER_DOCKER_EXTERNAL://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka3:29093,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-my_kafka}:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      CONFLUENT_SUPPORT_METRICS_ENABLE: 0
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+    volumes:
+      - ./volumes/kafka3/data:/var/lib/kafka/data:rw
+    user: 0:0
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka-cluster
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    ports:
+      - "9123:9123"
+    restart: always
+    environment:
+      SERVER_PORT: 9123
+      MANAGEMENT_SERVER_PORT: 9123
+      KAFKA_BROKERCONNECT: kafka-broker-1:19091,kafka-broker-2:29092,kafka-broker-3:29093
+    networks:
+      - kafka-cluster
+
+networks:
+  kafka-cluster:
+    # Specify driver options
+    name: kafka-cluster
+    driver: bridge
+
