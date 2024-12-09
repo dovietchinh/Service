@@ -1,5 +1,5 @@
 version: '3'
-
+# \connect test@localhost:3306/test
 services:
   mysql:
     image: mysql:8.0
@@ -14,6 +14,7 @@ services:
       MYSQL_PASSWORD: test
     volumes:
       - ./volumes/mysql/data:/var/lib/mysql 
+      - /home/sheldon/code/Services/Mysql/docker/init.sql:/docker-entrypoint-initdb.d/1.sql
     # networks:
     #   - mysql-cluster
 
