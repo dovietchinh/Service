@@ -7,7 +7,8 @@ class MyKafkaClient():
 
     def __init__(self,broker=None):
         if broker is None:
-            broker = "127.0.0.1:9091"
+            broker = "127.0.0.1:9091,127.0.0.1:9092,127.0.0.1:9093"
+            # broker = "localgh:10091"
         self.broker = broker
         conf = {
             'bootstrap.servers': self.broker,
@@ -28,7 +29,7 @@ class MyKafkaClient():
         Returns:
         dict: A dictionary of topic names to TopicMetadata objects.
         """
-        return self.consumer.list_topics().topics
+        return self.producer.list_topics().topics
 
     def create_topic(self, topic_name):
         """

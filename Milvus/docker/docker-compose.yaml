@@ -4,6 +4,7 @@ services:
   etcd:
     container_name: milvus-etcd
     image: quay.io/coreos/etcd:v3.5.14
+    restart: always
     environment:
       - ETCD_AUTO_COMPACTION_MODE=revision
       - ETCD_AUTO_COMPACTION_RETENTION=1000
@@ -21,12 +22,13 @@ services:
   minio:
     container_name: milvus-minio
     image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    restart: always
     environment:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
-    ports:
-      - "9001:9001"
-      - "9000:9000"
+        #    ports:
+      #      - "9001:9001"
+      #- "9000:9000"
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
     command: minio server /minio_data --console-address ":9001"
@@ -39,6 +41,7 @@ services:
   standalone:
     container_name: milvus-standalone
     image: milvusdb/milvus:v2.4.15
+    restart: always
     command: ["milvus", "run", "standalone"]
     security_opt:
     - seccomp:unconfined
@@ -60,6 +63,19 @@ services:
     depends_on:
       - "etcd"
       - "minio"
+  attu:
+    container_name: attu
+    image: zilliz/attu:v2.4
+    restart: always
+    environment:
+      MILVUS_URL: milvus-standalone:19530
+    ports:
+      - "8000:3000"
+    depends_on:
+      - "etcd"
+      - "minio"
+      - "standalone"
+
 
 networks:
   default:
