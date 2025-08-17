@@ -1,26 +1,81 @@
-version: "3.0"
+# version: '3.7'
+
 services:
   elasticsearch:
-    container_name: es-container
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.0
+    container_name: elasticsearch
     environment:
-      - xpack.security.enabled=false
-      - "discovery.type=single-node"
-    networks:
-      - es-net
+      - node.name=es01
+      - discovery.type=single-node
+      - xpack.security.enabled=false          # <--- TẮT SECURITY
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-  kibana:
-    container_name: kb-container
-    image: docker.elastic.co/kibana/kibana:7.17.0
-    environment:
-      - ELASTICSEARCH_HOSTS=http://es-container:9200
     networks:
-      - es-net
+      - elk_network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.14.0
+    container_name: kibana
     depends_on:
       - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200  # <--- Chỉ cần dòng này!
     ports:
       - 5601:5601
+    networks:
+      - elk_network
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.14.0
+    container_name: logstash
+    depends_on:
+      - elasticsearch
+    environment:
+      - LS_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - 5044:5044
+      - 5000:5000/tcp
+      - 5000:5000/udp
+      - 9600:9600
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    networks:
+      - elk_network
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.14.0
+    container_name: filebeat
+    depends_on:
+      - elasticsearch
+      - logstash
+    user: root
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - LOGSTASH_HOSTS=logstash:5044
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /u01/code/project/build-my-own-webserver/build/logs:/u01/code/project/build-my-own-webserver/build/logs:ro
+    networks:
+      - elk_network
+
+volumes:
+  esdata:
+    driver: local
+    driver_opts:
+      type: none
+      device: /u01/code/Service/ELK/docker/volumes
+      o: bind
+      
 networks:
-  es-net:
+  elk_network:
+    name: elk_network
     driver: bridge

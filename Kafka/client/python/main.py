@@ -31,7 +31,7 @@ class MyKafkaClient():
         """
         return self.producer.list_topics().topics
 
-    def create_topic(self, topic_name):
+    def create_topic(self, topic_name,num_partitions=1, replication_factor=1) -> None:
         """
         Creates a Kafka topic.
 
@@ -41,7 +41,7 @@ class MyKafkaClient():
         Returns:
         None
         """
-        new_topics = [NewTopic(topic=topic_name, num_partitions=1, replication_factor=1)]
+        new_topics = [NewTopic(topic=topic_name, num_partitions=num_partitions, replication_factor=replication_factor)]
         fs = self.admin_client.create_topics(new_topics)
         for topic, f in fs.items():
             try:
@@ -101,7 +101,9 @@ if __name__ == "__main__":
             print('7. Start consumer thread')
             if choice == '1':
                 topic = input('Enter topic name: ')
-                kafka_client.create_topic(topic)
+                num_partitions = int(input('Enter number of partitions: '))
+                replication_factor = int(input('Enter replication factor: '))
+                kafka_client.create_topic(topic, num_partitions, replication_factor)
             elif choice == '2':
                 topic = input('Enter topic name: ')
                 kafka_client.delete_topic(topic)
