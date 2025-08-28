@@ -1,0 +1,8 @@
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /u01/code/project/build-my-own-webserver/build/logs/*.log   # Thêm path log của app (tùy chỉnh)
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]

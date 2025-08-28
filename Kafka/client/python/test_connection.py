@@ -3,7 +3,8 @@ import confluent_kafka
 def test_connections():
     brokers = "localhost:9092"
     brokers = "192.168.1.100:9092" 
-    # brokers = "43.198.68.123:9092"
+    brokers = ""
+    brokers = "43.198.68.123:9092"
     producer = confluent_kafka.Producer({'bootstrap.servers': brokers})
     consumer = confluent_kafka.Consumer({'bootstrap.servers': brokers, 'group.id': 'mygroup'})
     topics = consumer.list_topics()

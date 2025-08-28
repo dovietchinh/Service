@@ -7,7 +7,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
-      bindIp: 127.0.0.1
+      bindIp: 0.0.0.0
     ports:
       - "27017:27017"
     restart: always
